@@ -26,11 +26,11 @@ function List(props) {
             key: 'coverImg',
             align: 'center',
             render: (txt, record, index) => {
-                return <img src={serveUrl + record.coverImg}
+                return record.coverImg ? (<img src={serveUrl + record.coverImg}
                     style={{
                         width: 60,
                         height: 60
-                    }} alt="img" />
+                    }} alt="img" />) : "暂无图片"
             }
         },
         {
@@ -66,6 +66,7 @@ function List(props) {
     ];
     /* 获取数据 */
     let getData = (params) => {
+        console.log(page, per, params)
         props.dispatch(getList({ page, per, ...params }));
     }
     let { list, total, page, per } = props;

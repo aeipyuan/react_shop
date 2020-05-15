@@ -8,7 +8,7 @@ export default (
                 page: action.data.page,
                 list: action.data.products,
                 total: action.data.totalCount,
-                per: action.data.products.length
+                per: action.data.per
             }
         default:
             return state;
