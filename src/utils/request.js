@@ -8,4 +8,6 @@ request.interceptors.request.use((config) => {
     config.headers.Authorization = "Bearer " + getToken();
     return config;
 })
-export { request };
+/* 导出服务器域名 */
+let serveUrl = "http://localhost:3009";
+export { request, serveUrl };

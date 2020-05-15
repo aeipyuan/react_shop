@@ -1,4 +1,6 @@
-import { createStore, combineReducers } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
 import notice from './reducers/notice'
-let reducers = combineReducers({ notice })
-export default createStore(reducers)
+import product from './reducers/product'
+let reducers = combineReducers({ notice, product })
+export default createStore(reducers, applyMiddleware(thunk))

@@ -16,7 +16,7 @@ const { Header, Content, Sider } = Layout;
 const routes = adminRoutes.filter(v => v.isShow);
 
 function index(props) {
-    console.log(props)
+    // console.log(props)
     const menu = (
         <Menu onClick={(e) => {
             if (e.key === 'notice') {
