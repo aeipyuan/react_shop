@@ -86,6 +86,66 @@ ReactDOM.render(
 );
 ```
 - 主页
+```javascript
+function App() {
+  return (
+    <Frame>
+      <Switch>
+        {adminRoutes.map(item => {
+          return <Route key={item.path} {...item} />
+        })}
+        {/* 跳转第一个 */}
+        <Redirect to={adminRoutes[0].path} from='/admin' />
+      </Switch>
+    </Frame>
+  );
+}
+```
+使用antd的布局构建Frame
+```javascript
+function index(props) {
+    return (<Layout>
+        <Header className="header">
+            <div className="logo" >
+                <img src="./logo192.png" alt="logo" style={{
+                    height: 50
+                }} />
+            </div>
+        </Header>
+        <Layout>
+            <Sider width={120} className="site-layout-background">
+                <Menu mode="inline" defaultSelectedKeys={['1']}
+                    defaultOpenKeys={['sub1']} style={{ height: '100%', borderRight: 0 }} >
+                    {routes.map(item => {
+                        return <Menu.Item key={item.path} icon={item.icon} onClick={
+                            () => props.history.push(item.path)
+                        }>{item.title}</Menu.Item>
+                    })}
+                </Menu>
+            </Sider>
+            <Layout style={{ padding: '24px 24px 24px' }}>
+                <Content className="site-layout-background" tyle={{
+                    padding: 24,
+                    margin: 0,
+                    minHeight: 280,
+                }} >
+                    {props.children}{/* 子元素 */}
+                </Content>
+            </Layout>
+        </Layout>
+    </Layout>)
+}
+```
 
 
 
+```javascript
+```
+
+
+```javascript
+```
+
+
+```javascript
+```
