@@ -1,4 +1,4 @@
-## 项目搭建
+
 - 创建react-app
 ```javascript
 npx create-react-app react_shop
@@ -17,18 +17,19 @@ export { getToken, setToken, clearToken };
 ```
 - 请求拦截
 ```javascript
-/* request.js */
 import axios from 'axios'
 import { getToken } from "./auth";
 let request = axios;
 /* url */
-request.baseUrl = "http://localhost:3009/api/v1/";
+request.defaults.baseURL = "http://localhost:3009/api/v1/";
 /* 拦截 */
 request.interceptors.request.use((config) => {
-    config.header.Authorization = "Bearer " + getToken();
+    config.headers.Authorization = "Bearer " + getToken();
     return config;
 })
-export { request };
+/* 导出服务器域名 */
+let serveUrl = "http://localhost:3009";
+export { request, serveUrl };
 ```
 - 路由配置
 ```javascript
@@ -65,87 +66,62 @@ let adminRoutes = [
 ]
 export { adminRoutes, mainRoutes }
 ```
-## 入口配置
+- redux配置
+```javascript
+/* actions > product.js */
+import { request } from '../../utils/request'
+export default params => async dispatch => {
+    let res = await request.get('/admin/products', { params });
+    dispatch({
+        type: "GETLIST",
+        data: {
+            ...res.data,
+            /* 页码和size也存入redux */
+            page: params.page ? params.page : 1,
+            per: params.per ? params.per : 1
+        }
+    })
+}
+/* index.js */
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import notice from './reducers/notice'
+import product from './reducers/product'
+let reducers = combineReducers({ notice, product })
+export default createStore(reducers, applyMiddleware(thunk))
+```
+- 入口配置
 ``` javascript
 /* index.jsx */
-ReactDOM.render(
-  <Router>
+<Provider store={store}>
+<Router>
     <Switch>
-      {/* admin开头的转到App渲染 */}
-      <Route path="/admin" render={props => <App {...props} />} />
-      {/* 根据路由配置生成Route */}
-      {mainRoutes.map(item => {
+    {/* admin开头的转到App渲染 */}
+    <Route path="/admin" render={props => <App {...props} />} />
+    {/* 根据路由配置生成Route */}
+    {mainRoutes.map(item => {
         return <Route key={item.path} {...item} />
-      })}
-      {/* '/' 跳转到主页*/}
-      <Redirect from='/' to="/admin" />
-      <Redirect to="/404" />
+    })}
+    {/* '/' 跳转到主页*/}
+    <Redirect from='/' to="/admin" />
+    <Redirect to="/404" />
     </Switch>
-  </Router>,
-  document.getElementById('root')
-);
-```
-- 主页
-```javascript
-function App() {
-  return (
-    <Frame>
-      <Switch>
-        {adminRoutes.map(item => {
-          return <Route key={item.path} {...item} />
-        })}
-        {/* 跳转第一个 */}
-        <Redirect to={adminRoutes[0].path} from='/admin' />
-      </Switch>
-    </Frame>
-  );
-}
-```
-使用antd的布局构建Frame
-```javascript
-function index(props) {
-    return (<Layout>
-        <Header className="header">
-            <div className="logo" >
-                <img src="./logo192.png" alt="logo" style={{
-                    height: 50
-                }} />
-            </div>
-        </Header>
-        <Layout>
-            <Sider width={120} className="site-layout-background">
-                <Menu mode="inline" defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['sub1']} style={{ height: '100%', borderRight: 0 }} >
-                    {routes.map(item => {
-                        return <Menu.Item key={item.path} icon={item.icon} onClick={
-                            () => props.history.push(item.path)
-                        }>{item.title}</Menu.Item>
-                    })}
-                </Menu>
-            </Sider>
-            <Layout style={{ padding: '24px 24px 24px' }}>
-                <Content className="site-layout-background" tyle={{
-                    padding: 24,
-                    margin: 0,
-                    minHeight: 280,
-                }} >
-                    {props.children}{/* 子元素 */}
-                </Content>
-            </Layout>
-        </Layout>
-    </Layout>)
-}
+</Router>
+</Provider>
 ```
 
-
-
-```javascript
-```
-
+- App组件
 
 ```javascript
-```
-
-
-```javascript
+getToken() ? (
+<Frame>
+    <Switch>
+    {adminRoutes.map(item => {
+        return <Route key={item.path} {...item} />
+    })}
+    {/* 跳转第一个 */}
+    <Redirect to={adminRoutes[0].path} from='/admin' />
+    </Switch>
+</Frame>
+) : (<Redirect to="/login" />)
 ```
