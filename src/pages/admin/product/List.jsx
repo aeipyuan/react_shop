@@ -66,13 +66,12 @@ function List(props) {
     ];
     /* 获取数据 */
     let getData = (params) => {
-        console.log(page, per, params)
         props.dispatch(getList({ page, per, ...params }));
     }
     let { list, total, page, per } = props;
     /* 初始化 */
     useEffect(() => {
-        getData({ page: 1, per: 3 });
+        getData({ page, per });
     }, [])
     /* 修改状态 */
     const changeStatu = async record => {
@@ -92,7 +91,8 @@ function List(props) {
         }>添加</Button>}>
             <Table rowKey="_id" dataSource={list} columns={columns} pagination={{
                 total,
-                defaultPageSize: 3,
+                defaultPageSize: per,
+                defaultCurrent: page,
                 showSizeChanger: true,
                 pageSizeOptions: ['2', '4', '6'],
                 onChange: (page, per) => getData({ page, per }),
