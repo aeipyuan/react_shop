@@ -86,7 +86,9 @@ function List(props) {
         getData();
     }
     return (
-        <Card title="商品列表" extra={<Button type="primary" size="small">添加</Button>}>
+        <Card title="商品列表" extra={<Button type="primary" size="small" onClick={
+            () => props.history.push('/admin/product/edit')
+        }>添加</Button>}>
             <Table rowKey="_id" dataSource={list} columns={columns} pagination={{
                 total,
                 defaultPageSize: 3,
