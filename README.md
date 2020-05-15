@@ -1,68 +1,91 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 项目搭建
+- 创建react-app
+```javascript
+npx create-react-app react_shop
+```
+- 安装依赖
+```javascript
+npm i react-router-dom redux antd  @ant-design/icons axios --save
+```
+- 封装token操作
+```javascript
+/* auth.js */
+let getToken = () => window.localStorage.getItem('token');
+let setToken = (val) => window.localStorage.setItem('token', val);
+let clearToken = () => window.localStorage.removeItem('token');
+export { getToken, setToken, clearToken };
+```
+- 请求拦截
+```javascript
+/* request.js */
+import axios from 'axios'
+import { getToken } from "./auth";
+let request = axios;
+/* url */
+request.baseUrl = "http://localhost:3009/api/v1/";
+/* 拦截 */
+request.interceptors.request.use((config) => {
+    config.header.Authorization = "Bearer " + getToken();
+    return config;
+})
+export { request };
+```
+- 路由配置
+```javascript
+/* route > index.js */
+import Login from '../pages/Login'
+import Edit from '../pages/admin/product/Edit'
+import List from '../pages/admin/product/List'
+import PageNotFound from '../pages/PageNotFound'
+import Dashboard from '../pages/admin/dashboard'
+let mainRoutes = [
+    {
+        path: '/login',
+        component: Login
+    }, {
+        path: '/404',
+        component: PageNotFound
+    }
+];
+let adminRoutes = [
+    {
+        path: '/admin/dashboard',
+        component: Dashboard,
+        isShow: true
+    }, {
+        path: '/admin/product',
+        component: List,
+        isShow: false,
+        exact: true
+    }, {
+        path: '/admin/product/edit/:id?',
+        component: Edit,
+        isShow: false
+    }
+]
+export { adminRoutes, mainRoutes }
+```
+## 入口配置
+``` javascript
+/* index.jsx */
+ReactDOM.render(
+  <Router>
+    <Switch>
+      {/* admin开头的转到App渲染 */}
+      <Route path="/admin" render={props => <App {...props} />} />
+      {/* 根据路由配置生成Route */}
+      {mainRoutes.map(item => {
+        return <Route key={item.path} {...item} />
+      })}
+      {/* '/' 跳转到主页*/}
+      <Redirect from='/' to="/admin" />
+      <Redirect to="/404" />
+    </Switch>
+  </Router>,
+  document.getElementById('root')
+);
+```
+- 主页
 
-## Available Scripts
 
-In the project directory, you can run:
 
-### `npm start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
